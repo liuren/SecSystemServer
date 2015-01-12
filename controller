@@ -1,0 +1,95 @@
+package cn.com.cisec.secsystem.server.controller.appstore;
+
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.ResponseBody;
+
+import cn.com.cisec.secsystem.server.controller.ResultInfo;
+import cn.com.cisec.secsystem.server.dto.AppListDto;
+import cn.com.cisec.secsystem.server.dto.AppTypeListDto;
+import cn.com.cisec.secsystem.server.model.App;
+import cn.com.cisec.secsystem.server.model.Pager;
+import cn.com.cisec.secsystem.server.service.IAppService;
+import cn.com.cisec.secsystem.server.service.IAppTypeService;
+
+@Controller
+@RequestMapping("manager/appStore/androidClient")
+public class AndroidClientController {
+	private IAppTypeService appTypeService;
+	private IAppService appService;
+	
+	@Autowired
+	public void setAppService(IAppService appService) {
+		this.appService = appService;
+	}
+	@Autowired
+	public void setAppTypeService(IAppTypeService appTypeService) {
+		this.appTypeService = appTypeService;
+	}
+	@RequestMapping("")
+	@ResponseBody
+	public Object appTypeManage(){
+		Map<String, Object> result  = new HashMap<String, Object>();
+		result.put(ResultInfo.RESULT, true);
+		result.put(ResultInfo.MSG, "访问成功");
+		return result;
+	}
+	/**
+	 * 获取app分类列表
+	 * @return
+	 */
+	@RequestMapping("getTypeList")
+	@ResponseBody
+	public Object getAppTypeList(){
+		List<AppTypeListDto> list= appTypeService.getAllAppTypeList();
+		Map<String, Object> result = new HashMap<String, Object>();
+		result.put(ResultInfo.RESULT, true);
+		result.put(ResultInfo.LIST, list);
+		return result;
+	}
+	/**
+	 * 显示每个分类的APP应用列表
+	 * @param id
+	 * @return
+	 */
+	//@RequestMapping("getSelectTypeList")
+	@RequestMapping("appList")
+	@ResponseBody
+	public Object findObject(String id){
+		Pager<AppListDto> page = appTypeService.findAptList(id);
+		return page;
+	}
+	/**
+	 * 用于获取升级信息
+	 * @param packagename
+	 * @return
+	 */
+	@RequestMapping("checkAppUpdate")
+	@ResponseBody
+	public Object checkAppUpdate(String packagename){
+		Map<String, Object> result = new HashMap<String, Object>();
+		List<App> list =appService.checkAppBypackagename(packagename);
+		result.put(ResultInfo.RESULT, true);
+		result.put(ResultInfo.LIST, list);
+		return result;
+	}
+	/**
+	 * 客户端获取APP详细信息
+	 * @param packagename
+	 * @return
+	 */
+	@RequestMapping("appInfo")
+	@ResponseBody
+	public Object getAppInfo(String packagename){
+		Map<String, Object> result = new HashMap<String, Object>();
+		App app =appService.getAppInfo(packagename);
+		result.put(ResultInfo.RESULT, true);
+		result.put(ResultInfo.LIST, app);
+		return result;
+	}
+}
